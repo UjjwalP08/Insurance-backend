@@ -36,11 +36,20 @@ const addBill = async (req, res) => {
 }
 
 const getBill = async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+
     try {
-        const data = await Bill.find();
+        const data = await Bill.find().skip((page - 1) * limit).limit(limit);
+
+        const count = await Bill.countDocuments();
         return res.json({
-            data
+            data: {
+                count,
+                rows: data
+            }
         })
+
+
     } catch (error) {
         console.log(error)
     }
