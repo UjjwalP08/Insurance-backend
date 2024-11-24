@@ -1,15 +1,11 @@
 const Joi = require("joi");
-const cloudinary = require('cloudinary').v2;
-const { Bill } = require("./schema")
+
+const { Bill } = require("./schema");
+const { cloudinary } = require("../../utils/config/cloudinary-config");
 require("dotenv").config().parsed
 
 
-// Cloudinary configuration
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+
 
 const addBill = async (req, res) => {
     try {
@@ -22,16 +18,14 @@ const addBill = async (req, res) => {
             amount: Joi.number().required(),
         })
         const payload = validationSchema.validate(body);
-        console.log(req.file, payload)
 
-        // const billImage = await cloudinary.uploader.upload(req.files['billImage'][0].path, {
-        //     folder: 'uploads'
-        // });
-        // const payload = validationSchema.validate(body);
-        // await Bill.create({
-        //     ...body,
-        //     billImage: billImage.secure_url
-        // })
+        const billImage = await cloudinary.uploader.upload(req.file.path, {
+            folder: process.env.IMAGE_UPLOAD_FOLDER
+        });
+        await Bill.create({
+            ...payload.value,
+            billImage: billImage.secure_url
+        })
         res.status(201).json({
             message: "Bill Created Successfully!!!"
         })
