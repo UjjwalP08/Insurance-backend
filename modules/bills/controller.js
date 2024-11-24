@@ -36,7 +36,7 @@ const getBill = async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
     try {
-        const data = await Bill.find().skip((page - 1) * limit).limit(limit);
+        const data = await Bill.find().skip((page - 1) * limit).limit(limit).sort({ createdAt: -1 });
 
         const count = await Bill.countDocuments();
         return res.json({
