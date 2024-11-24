@@ -104,4 +104,5 @@ module.exports = {
     addBill,
     getBill,
     deleteBill,
+    editBill
 }
