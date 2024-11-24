@@ -64,16 +64,23 @@ const editBill = async (req, res) => {
         })
         const payload = validationSchema.validate(req.body);
 
-        const billImage = await cloudinary.uploader.upload(req.file.path, {
-            folder: process.env.IMAGE_UPLOAD_FOLDER
-        });
-        // await Bill.create({
 
-        // })
-        await Bill.findByIdAndUpdate({ _id }, {
+        let billImage = null;
+        if (req.file) {
+            billImage = await cloudinary.uploader.upload(req.file.path, {
+                folder: process.env.IMAGE_UPLOAD_FOLDER
+            });
+        }
+        let payloadData = {
             ...payload.value,
-            billImage: billImage.secure_url
-        })
+        }
+        if (billImage) {
+            payloadData = {
+                ...payloadData,
+                billImage: billImage.secure_url
+            }
+        }
+        await Bill.findByIdAndUpdate({ _id }, payloadData)
         return res.status(202).json({
             message: "Bill Update Successfully!!!"
         });

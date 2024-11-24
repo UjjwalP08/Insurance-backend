@@ -8,6 +8,6 @@ const billsController = require("./controller");
 
 router.route("/").post(upload.single("billImage"), billsController.addBill).get(billsController.getBill);
 
-router.route("/:id").patch(billsController.editBill).delete(billsController.deleteBill);
+router.route("/:id").patch(upload.single("billImage"), billsController.editBill).delete(billsController.deleteBill);
 
 module.exports = router
