@@ -33,9 +33,26 @@ const addBill = async (req, res) => {
 }
 
 const getBill = async (req, res) => {
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 10, searchQuery } = req.query;
 
     try {
+
+        if (searchQuery) {
+            const results = await Bill.find({
+                $or: [
+                    // Case-insensitive search for billNo
+                    { billNo: { $regex: searchQuery, $options: 'i' } },
+
+                ],
+            });
+
+            return res.json({
+                data: {
+                    count: results?.length,
+                    rows: results
+                }
+            })
+        }
         const data = await Bill.find().skip((page - 1) * limit).limit(limit).sort({ createdAt: -1 });
 
         const count = await Bill.countDocuments();
